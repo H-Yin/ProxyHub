@@ -6,9 +6,9 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-24 16:39:40(+0800)
-#  Modified    : 2019-06-04 18:07:59(+0800)
+#  Modified    : 2019-06-04 19:01:41(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub.git
-#  Description : Build a checher that can check wether the ip:port
+#  Description : Build a checker that can check wether the ip:port
 #                is valid or not.
 #################################################################
 
@@ -18,7 +18,8 @@ import time
 import requests
 from lxml import etree
 
-from utils.logger import logger
+from logger import logger
+from config import CHECKER 
 
 HTTP_TYPE = {
     'HTTP':1,
@@ -50,6 +51,7 @@ class Checker(object):
         while retry_count < retry:
             http_type = 0
             if self._check_ip(ip) and self._check_port(port):
+                # check http
                 try:
                     proxies = {"http" : "http://%s:%s" % (ip, port)}
                     res = requests.get('http://www.httpbin.org/headers', proxies=proxies, timeout=timeout)
@@ -57,6 +59,7 @@ class Checker(object):
                         http_type |= 1
                 except:
                     logger.error("<http://%s:%s> is not available." % (ip, str(port)))
+                # check https
                 try:
                     proxies = {"https" : "https://%s:%s" % (ip, port)}
                     requests.get('http://www.httpbin.org/headers', proxies=proxies, timeout=timeout)
@@ -66,7 +69,6 @@ class Checker(object):
                     logger.error("<https://%s:%s> is not available." % (ip,str(port)))
             else:
                 logger.error("%s:%s is error." % (ip, port))
-
             if http_type > 0:
                 return {'ip':ip, 'port':port, 'http_type': http_type}
             retry_count += 1
@@ -74,6 +76,7 @@ class Checker(object):
 
     def get_address():
         pass
+
 if __name__ == '__main__':
     checker = Checker()
     print(checker.check('112.87.70.208', 9999))

@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-17 22:29:52(+0800)
-#  Modified    : 2019-06-04 18:11:55(+0800)
+#  Modified    : 2019-06-04 19:02:06(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub
 #  Description : A parser that can parser HTML to get IPs
 #################################################################
@@ -16,7 +16,8 @@ import time
 import requests
 from lxml import etree
 
-from utils.logger import logger
+from logger import logger
+from config import PARSER
 
 ParserList=[
     "parse_kuaidaili",

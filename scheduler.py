@@ -6,9 +6,9 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-06-01 23:23:30(+0800)
-#  Modified    : 2019-06-04 18:27:30(+0800)
+#  Modified    : 2019-06-04 19:01:47(+0800)
 #  GitHub      : https://github.com/H-Yin/
-#  Description : 
+#  Description : coordinate parser and checker
 #################################################################
 
 import queue as _q
@@ -17,14 +17,14 @@ import signal
 import time
 from operator import methodcaller
 
-from utils.logger import logger
+from logger import logger
 from parser import Parser, ParserList
 from checker import Checker
-
+from config import SCHEDULER
 
 class Scheduler(object):
 
-    def __init__(self, mincount=10, maxsize=1000):
+    def __init__(self, mincount=3, num_checker=5,  maxsize=1000):
         self._in = _q.Queue(maxsize=maxsize)   # input queue
         self._out = _q.Queue(maxsize=maxsize * 0.5)  # output queue
         self._drop = _q.Queue()
@@ -36,6 +36,7 @@ class Scheduler(object):
         # thread status
         self._running = False
         self._min = mincount
+        self._num_checker = num_checker
 
     def run(self):
         def _parser(self):
@@ -47,9 +48,8 @@ class Scheduler(object):
                             if x['ip'] not in self._in_set:
                                 self._in_set.add(x['ip'])
                                 self._in.put(x, True)
-                time.sleep(60)
 
-        def _checker(self, x):
+        def _checker(self):
             while self._running:
                 try:
                     item = self._in.get(True)
@@ -61,17 +61,16 @@ class Scheduler(object):
                         self._drop.put(res)
                 except _q.Empty:
                     pass
-                except KeyboardInterrupt:
-                    break
+        
         self._running = True
         # create 2 thread to get and check ip:port
         t_parser = threading.Thread(target=_parser, args=(self,))
         t_parser.start()
-        for x in range(0, 5):
-            t_checker = threading.Thread(target=_checker,args=(self,x))
+        for x in range(0, self._num_checker):
+            t_checker = threading.Thread(target=_checker, args=(self,))
             t_checker.start()
         # prepear
-        while self._out.qsize() < 3:
+        while self._out.qsize() < self._min:
             time.sleep(1)
 
     def stop(self, signum=None, frame=None):
