@@ -1,5 +1,5 @@
 LOG={
-    'steam':{
+    'stream':{
         'on': True
     },
     'file':{
