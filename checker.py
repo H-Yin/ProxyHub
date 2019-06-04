@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-24 16:39:40(+0800)
-#  Modified    : 2019-04-24 16:41:57(+0800)
+#  Modified    : 2019-06-04 18:07:59(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub.git
 #  Description : Build a checher that can check wether the ip:port
 #                is valid or not.
@@ -45,30 +45,35 @@ class Checker(object):
             flag = False
         return flag
     
-    def check(self, ip, port, timeout=5):
-        http_type = 0
-        if self._check_ip(ip) and self._check_port(port):
-            try:
-                proxies = {"http" : "http://%s:%d" % (ip, port)}
-                res = requests.get('http://www.httpbin.org/headers', proxies=proxies, timeout=timeout)
-                if res.ok:
-                    http_type |= 1
-            except:
-                logger.error("<http://%s:%d> is not available." % (ip,port))
-            try:
-                proxies = {"https" : "https://%s:%d" % (ip, port)}
-                requests.get('http://www.httpbin.org/headers', proxies=proxies, timeout=timeout)
-                if res.ok:
-                    http_type |= 2
-            except:
-                logger.error("<https://%s:%d> is not available." % (ip,port))
-        
-        if http_type > 0:
-            return (ip, port, http_type)
+    def check(self, ip, port, retry=1, timeout=3):
+        retry_count = 0
+        while retry_count < retry:
+            http_type = 0
+            if self._check_ip(ip) and self._check_port(port):
+                try:
+                    proxies = {"http" : "http://%s:%s" % (ip, port)}
+                    res = requests.get('http://www.httpbin.org/headers', proxies=proxies, timeout=timeout)
+                    if res.ok:
+                        http_type |= 1
+                except:
+                    logger.error("<http://%s:%s> is not available." % (ip, str(port)))
+                try:
+                    proxies = {"https" : "https://%s:%s" % (ip, port)}
+                    requests.get('http://www.httpbin.org/headers', proxies=proxies, timeout=timeout)
+                    if res.ok:
+                        http_type |= 2
+                except:
+                    logger.error("<https://%s:%s> is not available." % (ip,str(port)))
+            else:
+                logger.error("%s:%s is error." % (ip, port))
+
+            if http_type > 0:
+                return {'ip':ip, 'port':port, 'http_type': http_type}
+            retry_count += 1
         return None
 
     def get_address():
         pass
 if __name__ == '__main__':
     checker = Checker()
-    print(checker.check('118.24.61.165', 8118))
+    print(checker.check('112.87.70.208', 9999))

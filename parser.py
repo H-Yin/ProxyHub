@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-17 22:29:52(+0800)
-#  Modified    : 2019-04-17 22:30:44(+0800)
+#  Modified    : 2019-06-04 18:11:55(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub
 #  Description : A parser that can parser HTML to get IPs
 #################################################################
@@ -17,6 +17,16 @@ import requests
 from lxml import etree
 
 from utils.logger import logger
+
+ParserList=[
+    "parse_kuaidaili",
+    "parse_shenjidaili",
+    "parse_qydaili",
+    "parse_superfastip",
+    "parse_89ip",
+    "parse_data5u",
+    "parse_31f"
+]
 
 class Parser(object):
     def __init__(self):
@@ -56,12 +66,12 @@ class Parser(object):
             for tr in trs:
                 item = {}
                 tds = tr.xpath('td')
-                item['ip'] = tds[0].text.strip()                # IP
+                item['ip'] = tds[0].text.strip().split(":")[0]  # IP
                 item['port'] = tds[1].text.strip()              # Port
                 item['http_type'] = tds[3].text.strip()         # HTTP or HTTPS
                 items.append(item)
         else:
-            logger.error("download shenjidaili page failed.(status_code:%d)")
+            logger.error("download shenjidaili page failed.(status_code:%d)" % response.status_code)
         logger.info("get %d IPs from shenjidaili." % len(items))
         return items
 
@@ -70,7 +80,7 @@ class Parser(object):
         for page_id in range(1, num+1):
             response = requests.get("http://www.qydaili.com/free/?action=china&page=%d" % page_id)
             if response.status_code != 200:
-                logger.error("download qydaili page <%d> failed.(status_code:%d)" % (page_id,response.status_code))
+                logger.error("download qydaili page <%d> failed.(status_code:%d)" % (page_id, response.status_code))
                 break
             html = etree.HTML(response.text)
             trs = html.xpath('//table/tbody/tr')
@@ -185,7 +195,7 @@ class Parser(object):
         for page_id in range(len(target)):
             response = requests.get(base_url % target[page_id])
             if response.status_code != 200:
-                logger.error("download 66ip page <%s> failed." % (target[page_id],response.status_code))
+                logger.error("download 66ip page <%s> failed.(status_code:%d)" % (target[page_id], response.status_code))
                 break
             html = etree.HTML(response.text)
             trs = html.xpath('//table[1]/tr')
@@ -200,8 +210,18 @@ class Parser(object):
         logger.info("get %d IPs from 31f." % len(items))
         return items
 
+    def parse(self):
+        items = []
+        items.extend(self.parse_kuaidaili())
+        items.extend(self.parse_shenjidaili())
+        items.extend(self.parse_qydaili())
+        items.extend(self.parse_superfastip())
+        items.extend(self.parse_89ip())
+        items.extend(self.parse_data5u())
+        items.extend(self.parse_31f())
+        return items
+    
 if __name__ == '__main__':
     parser = Parser()
-
     res = parser.parse_31f()
     print(len(res))

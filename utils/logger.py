@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-17 17:16:16(+0800)
-#  Modified    : 2019-04-17 17:19:45(+0800)
+#  Modified    : 2019-06-04 17:36:40(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub
 #  Description : setup a logger that can output to stream and file
 #################################################################
@@ -25,7 +25,8 @@ if not logger.hasHandlers():
     # StreamHandler
     stream_handler = logging.StreamHandler(stream=sys.stdout)
     stream_handler.setLevel(level=logging.DEBUG)
-    logger.addHandler(stream_handler)
+    #logger.addHandler(stream_handler)
+    
     # FileHandler
     file_handler = logging.FileHandler('proxyhub.log')
     file_handler.setLevel(level=logging.INFO)
