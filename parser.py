@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-17 22:29:52(+0800)
-#  Modified    : 2019-06-04 19:02:06(+0800)
+#  Modified    : 2020-05-17 01:13:08(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub
 #  Description : A parser that can parser HTML to get IPs
 #################################################################
@@ -30,8 +30,12 @@ ParserList=[
 ]
 
 class Parser(object):
-    def __init__(self):
-        pass
+    _in_queue = None 
+    def __init__(self, q=None):
+        if _in_queue is None and q is not None:
+            _in_queue = q
+
+        assert _in_queue is not None
 
     def parse_kuaidaili(self, num=5):
         items = []
@@ -224,5 +228,5 @@ class Parser(object):
     
 if __name__ == '__main__':
     parser = Parser()
-    res = parser.parse_31f()
-    print(len(res))
+    res = parser.parse_kuaidaili()
+    print(res)

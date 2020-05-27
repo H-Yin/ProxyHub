@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-24 16:39:40(+0800)
-#  Modified    : 2019-06-04 19:01:41(+0800)
+#  Modified    : 2020-05-17 01:16:43(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub.git
 #  Description : Build a checker that can check wether the ip:port
 #                is valid or not.

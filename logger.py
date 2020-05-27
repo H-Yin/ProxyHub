@@ -6,7 +6,7 @@
 #  Author      : H.Yin
 #  Email       : csustyinhao@gmail.com
 #  Created     : 2019-04-17 17:16:16(+0800)
-#  Modified    : 2019-06-04 18:47:06(+0800)
+#  Modified    : 2020-05-17 00:57:57(+0800)
 #  GitHub      : https://github.com/H-Yin/ProxyHub
 #  Description : setup a logger that can output to stream and file
 #################################################################
